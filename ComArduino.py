@@ -161,7 +161,7 @@ endMarker = 62
 
 waitForArduino()
 
-while true :
+while TRUE :
   
   testData = []
   #testData.append("<LED1,200,0.2>")
