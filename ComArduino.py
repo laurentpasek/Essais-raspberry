@@ -161,20 +161,23 @@ endMarker = 62
 
 waitForArduino()
 
+while true :
+  
+  testData = []
+  #testData.append("<LED1,200,0.2>")
+  #testData.append("<LED1,800,0.7>")
+  #testData.append("<LED2,800,0.5>")
+  #testData.append("<LED2,200,0.2>")
+  #testData.append("<LED1,200,0.7>")
+  testData.append("<T.air>")
+  testData.append("<T.eau>")
+  testData.append("<Hygro>")
+  #testData.append("<temperature>")
 
-testData = []
-#testData.append("<LED1,200,0.2>")
-#testData.append("<LED1,800,0.7>")
-#testData.append("<LED2,800,0.5>")
-#testData.append("<LED2,200,0.2>")
-#testData.append("<LED1,200,0.7>")
-testData.append("<T.air>")
-testData.append("<T.eau>")
-testData.append("<Hygro>")
-#testData.append("<temperature>")
 
-
-runTest(testData)
+  runTest(testData)
+  
+  time.sleep (10)
 
 
 ser.close
