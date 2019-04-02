@@ -134,6 +134,57 @@ def runTest(td):
 
 #    time.sleep(2)
 
+#======================================
+def lectureCapteurs ():
+    capteurs = []
+    capteurs.append ("<lireTeau>")
+    capteurs.append ("<lireTair>")
+    capteurs.append ("<lireHygro>")
+    
+    numloops = len (capteurs)
+    n = 0
+    
+    while n < numloops :
+        testString = td [n]
+        sendToArduino (testString)
+        n += 1
+        time.sleep (2)
+        
+#======================================
+        
+def collecteDonnees ():
+    global Teau, Tair, Hygro
+    
+    Teau = receptionDonnees ("<SendTeau>")
+    Tair = receptionDonnees ("<SendTair>")
+    Hygro = receptionDonnees ("<SendHygro>")
+    
+    
+#======================================
+    
+def receptionDonnees (testString):
+    waitingForReply = False
+    if waitingForReply == False :
+        sendToArduino (testString)
+        waitingForReply = True
+    
+    if waitingForReply == True :
+        while ser.inWaiting () == 0 :
+            pass
+        
+    dataReceived = recvFromArduino ()
+    waitingForReply = False
+    return (dataReceived)
+
+
+#======================================
+
+
+def versInfluxDB () :
+    global Teau, Tair, Hygro
+    
+    
+
 
 #======================================
 
@@ -158,6 +209,9 @@ print ("Serial port " + serPort + " opened  Baudrate " + str(baudRate))
 startMarker = 60
 endMarker = 62
 
+Teau = 0
+Tair = 0
+Hygro = 0
 
 waitForArduino()
 
@@ -176,8 +230,11 @@ while True :
 
 
   runTest(testData)
+
+  print ()
+  print ()
   
-  time.sleep (10)
+  time.sleep (5)
 
 
 ser.close
