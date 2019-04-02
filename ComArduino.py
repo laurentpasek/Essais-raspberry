@@ -137,15 +137,15 @@ def runTest(td):
 #======================================
 def lectureCapteurs ():
     capteurs = []
-    capteurs.append ("<lireTeau>")
-    capteurs.append ("<lireTair>")
-    capteurs.append ("<lireHygro>")
+#    capteurs.append ("<LireTempEau>")
+    capteurs.append ("<LireTempAir>")
+#    capteurs.append ("<lireHygro>")
     
     numloops = len (capteurs)
     n = 0
     
     while n < numloops :
-        testString = td [n]
+        testString = capteurs [n]
         sendToArduino (testString)
         n += 1
         time.sleep (2)
@@ -155,9 +155,9 @@ def lectureCapteurs ():
 def collecteDonnees ():
     global Teau, Tair, Hygro
     
-    Teau = receptionDonnees ("<SendTeau>")
-    Tair = receptionDonnees ("<SendTair>")
-    Hygro = receptionDonnees ("<SendHygro>")
+#    Teau = receptionDonnees ("<SendTempEau>")
+    Tair = receptionDonnees ("<SendTempAir>")
+#    Hygro = receptionDonnees ("<SendHygro>")
     
     
 #======================================
@@ -217,23 +217,29 @@ waitForArduino()
 
 while True :
   
-  testData = []
+#  testData = []
   #testData.append("<LED1,200,0.2>")
   #testData.append("<LED1,800,0.7>")
   #testData.append("<LED2,800,0.5>")
   #testData.append("<LED2,200,0.2>")
   #testData.append("<LED1,200,0.7>")
-  testData.append("<T.air>")
-  testData.append("<T.eau>")
-  testData.append("<Hygro>")
+#  testData.append("<T.air>")
+#  testData.append("<T.eau>")
+#  testData.append("<Hygro>")
   #testData.append("<temperature>")
 
 
-  runTest(testData)
+#  runTest(testData)
 
-  print ()
+  print (Teau)
   print ()
   
+  lectureCapteurs ()
+  time.sleep (2)
+  collecteDonnees ()
+  versInfluxDB ()
+
+
   time.sleep (5)
 
 
