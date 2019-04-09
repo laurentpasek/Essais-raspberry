@@ -58,6 +58,7 @@
 
 def sendToArduino(sendStr):
   ser.write(sendStr)
+  print ("envoye par sendToArduino" + sendStr )
 
 
 #======================================
@@ -81,6 +82,7 @@ def recvFromArduino():
     x = ser.read()
   
   return(ck)
+  print (ck)
 
 
 #============================
@@ -139,7 +141,7 @@ def lectureCapteurs ():
     capteurs = []
 #    capteurs.append ("<LireTempEau>")
     capteurs.append ("<LireTempAir>")
-#    capteurs.append ("<lireHygro>")
+    capteurs.append ("<lireHygro>")
     
     numloops = len (capteurs)
     n = 0
@@ -147,6 +149,9 @@ def lectureCapteurs ():
     while n < numloops :
         testString = capteurs [n]
         sendToArduino (testString)
+        
+        print ("ordre envoye a l'arduino" + testString)
+        
         n += 1
         time.sleep (2)
         
@@ -157,7 +162,7 @@ def collecteDonnees ():
     
 #    Teau = receptionDonnees ("<SendTempEau>")
     Tair = receptionDonnees ("<SendTempAir>")
-#    Hygro = receptionDonnees ("<SendHygro>")
+    Hygro = receptionDonnees ("<SendHygro>")
     
     
 #======================================
@@ -172,9 +177,10 @@ def receptionDonnees (testString):
         while ser.inWaiting () == 0 :
             pass
         
-    dataReceived = recvFromArduino ()
-    waitingForReply = False
-    return (dataReceived)
+        dataReceived = recvFromArduino ()
+        waitingForReply = False
+        print ("recu par pi : " +dataReceived)
+        return (dataReceived)
 
 
 #======================================
@@ -183,6 +189,20 @@ def receptionDonnees (testString):
 def versInfluxDB () :
     global Teau, Tair, Hygro
     
+    json_body = [
+        {
+            "measurement": "Temp_Air",
+            "tags": {
+                "mesure": "temperature",
+                "milieu": "air"
+                },
+            "fields": {
+                "temperature": Tair
+                }
+            },
+        ]
+    
+    client.write_points(json_body)
     
 
 
@@ -194,6 +214,7 @@ def versInfluxDB () :
 
 import serial
 import time
+from influxdb import InfluxDBClient
 
 print ()
 print ()
@@ -203,6 +224,7 @@ print ()
 serPort = "/dev/ttyUSB0"
 baudRate = 9600
 ser = serial.Serial(serPort, baudRate)
+
 print ("Serial port " + serPort + " opened  Baudrate " + str(baudRate))
 
 
@@ -210,10 +232,16 @@ startMarker = 60
 endMarker = 62
 
 Teau = 0
-Tair = 0
+Tair = 10
 Hygro = 0
 
-waitForArduino()
+
+client = InfluxDBClient (host='localhost', port=8086)
+client.switch_database('essai1')
+
+
+
+#waitForArduino()
 
 while True :
   
@@ -235,11 +263,11 @@ while True :
   print ()
   
   lectureCapteurs ()
-  time.sleep (2)
+#  time.sleep (2)
   collecteDonnees ()
   versInfluxDB ()
 
-
+  print (Teau)
   time.sleep (5)
 
 
