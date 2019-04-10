@@ -139,7 +139,7 @@ def runTest(td):
 #======================================
 def lectureCapteurs ():
     capteurs = []
-#    capteurs.append ("<LireTempEau>")
+    capteurs.append ("<LireTempEau>")
     capteurs.append ("<LireTempAir>")
     capteurs.append ("<lireHygro>")
     
@@ -160,7 +160,7 @@ def lectureCapteurs ():
 def collecteDonnees ():
     global Teau, Tair, Hygro
     
-#    Teau = receptionDonnees ("<SendTempEau>")
+    Teau = receptionDonnees ("<SendTempEau>")
     Tair = receptionDonnees ("<SendTempAir>")
     Hygro = receptionDonnees ("<SendHygro>")
     
@@ -200,6 +200,27 @@ def versInfluxDB () :
                 "temperature": Tair
                 }
             },
+        {
+            "measurement": "Hygro",
+            "tags": {
+                "mesure": "hygrometrie",
+                "milieu": "air"
+                },
+            "fields": {
+                "hygrometrie": Hygro
+                }
+            },
+        {
+            "measurement": "Temp_Eau",
+            "tags": {
+                "mesure": "temperature",
+                "milieu": "eau"
+                },
+            "fields": {
+                "temperature": Teau
+                }
+            },
+        
         ]
     
     client.write_points(json_body)
