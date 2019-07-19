@@ -58,7 +58,7 @@
 
 def sendToArduino(sendStr):
   ser.write(sendStr)
-  print ("envoye par sendToArduino" + sendStr )
+#  print ("envoye par sendToArduino" + sendStr )
 
 
 #======================================
@@ -82,7 +82,7 @@ def recvFromArduino():
     x = ser.read()
   
   return(ck)
-  print (ck)
+#  print (ck)
 
 
 #============================
@@ -141,7 +141,7 @@ def lectureCapteurs ():
     capteurs = []
     capteurs.append ("<LireTempEau>")
     capteurs.append ("<LireTempAir>")
-    capteurs.append ("<lireHygro>")
+    capteurs.append ("<LireHygro>")
     
     numloops = len (capteurs)
     n = 0
@@ -150,7 +150,7 @@ def lectureCapteurs ():
         testString = capteurs [n]
         sendToArduino (testString)
         
-        print ("ordre envoye a l'arduino" + testString)
+#        print ("ordre envoye a l'arduino" + testString)
         
         n += 1
         time.sleep (2)
@@ -160,9 +160,9 @@ def lectureCapteurs ():
 def collecteDonnees ():
     global Teau, Tair, Hygro
     
-    Teau = receptionDonnees ("<SendTempEau>")
-    Tair = receptionDonnees ("<SendTempAir>")
-    Hygro = receptionDonnees ("<SendHygro>")
+    Teau = float(receptionDonnees ("<SendTempEau>"))
+    Tair = float(receptionDonnees ("<SendTempAir>"))
+    Hygro = float(receptionDonnees ("<SendHygro>"))
     
     
 #======================================
@@ -179,7 +179,7 @@ def receptionDonnees (testString):
         
         dataReceived = recvFromArduino ()
         waitingForReply = False
-        print ("recu par pi : " +dataReceived)
+#        print ("recu par pi : " +dataReceived)
         return (dataReceived)
 
 
@@ -236,6 +236,7 @@ def versInfluxDB () :
 import serial
 import time
 from influxdb import InfluxDBClient
+import datetime
 
 print ()
 print ()
@@ -258,7 +259,7 @@ Hygro = 0
 
 
 client = InfluxDBClient (host='localhost', port=8086)
-client.switch_database('essai1')
+client.switch_database('hydro')
 
 
 
@@ -280,17 +281,18 @@ while True :
 
 #  runTest(testData)
 
-  print (Teau)
-  print ()
+#  print (Teau)
+#  print ()
   
   lectureCapteurs ()
 #  time.sleep (2)
   collecteDonnees ()
   versInfluxDB ()
 
-  print (Teau)
-  time.sleep (5)
-
+  print (datetime.datetime.now())
+  print (" :  T eau : " + str(Teau) + "  T air : " + str(Tair) + ' Hygro : ' + str(Hygro))
+  print ()
+  time.sleep (300)
 
 ser.close
 
