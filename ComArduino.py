@@ -142,7 +142,8 @@ def lectureCapteurs ():
     capteurs.append ("<LireTempEau>")
     capteurs.append ("<LireTempAir>")
     capteurs.append ("<LireHygro>")
-    
+    capteurs.append ("<LirePression>")
+    capteurs.append ("<LireTempElec>")    
     numloops = len (capteurs)
     n = 0
     
@@ -158,11 +159,13 @@ def lectureCapteurs ():
 #======================================
         
 def collecteDonnees ():
-    global Teau, Tair, Hygro
+    global Teau, Tair, Hygro, Pression, Telec
     
     Teau = float(receptionDonnees ("<SendTempEau>"))
     Tair = float(receptionDonnees ("<SendTempAir>"))
     Hygro = float(receptionDonnees ("<SendHygro>"))
+    Pression = float(receptionDonnees ("<SendPression>"))
+    Telec = float(receptionDonnees ("<SendTempElec>"))
     
     
 #======================================
@@ -256,6 +259,8 @@ endMarker = 62
 Teau = 0
 Tair = 10
 Hygro = 0
+Pression = 0
+Telec = 0
 
 
 client = InfluxDBClient (host='localhost', port=8086)
@@ -290,7 +295,7 @@ while True :
   versInfluxDB ()
 
   print (datetime.datetime.now())
-  print (" :  T eau : " + str(Teau) + "  T air : " + str(Tair) + ' Hygro : ' + str(Hygro))
+  print (" :  T eau : " + str(Teau) + "  T air : " + str(Tair) + ' Hygro : ' + str(Hygro) + " Pression : " + str(Pression) + " T Elec : " + str (Telec))
   print ()
   time.sleep (300)
 
