@@ -143,7 +143,8 @@ def lectureCapteurs ():
     capteurs.append ("<LireTempAir>")
     capteurs.append ("<LireHygro>")
     capteurs.append ("<LirePression>")
-    capteurs.append ("<LireTempElec>")    
+    capteurs.append ("<LireTempElec>")
+    capteurs.append ("<LireLuminosite>")
     numloops = len (capteurs)
     n = 0
     
@@ -159,13 +160,14 @@ def lectureCapteurs ():
 #======================================
         
 def collecteDonnees ():
-    global Teau, Tair, Hygro, Pression, Telec
+    global Teau, Tair, Hygro, Pression, Telec, Luminosite
     
     Teau = float(receptionDonnees ("<SendTempEau>"))
     Tair = float(receptionDonnees ("<SendTempAir>"))
     Hygro = float(receptionDonnees ("<SendHygro>"))
     Pression = float(receptionDonnees ("<SendPression>"))
     Telec = float(receptionDonnees ("<SendTempElec>"))
+    Luminosite = float(receptionDonnees ("<SendLuminosite>"))
     
     
 #======================================
@@ -190,7 +192,7 @@ def receptionDonnees (testString):
 
 
 def versInfluxDB () :
-    global Teau, Tair, Hygro
+    global Teau, Tair, Hygro, Telec, Pression, Luminosite
     
     json_body = [
         {
@@ -223,6 +225,36 @@ def versInfluxDB () :
                 "temperature": Teau
                 }
             },
+	{
+	    "measurement": "Temp_Elec",
+	    "tags": {
+	        "mesure": "temperature",
+	        "milieu": "air_coffret_electronique"
+	        },
+	    "fields": {
+	        "temperature": Telec
+	        }
+	    },
+	{
+	    "measurement": "Pression_atmospherique",
+	    "tags": {
+	        "mesure": "pression",
+	        "milieu": "air"
+	        },
+	    "fields": {
+	        "pression": Pression
+	        }
+	    },
+	{
+	    "measurement": "Luminosite",
+	    "tags": {
+		"mesure": "luminosite",
+		"milieu": "air"
+		},
+	    "fields": {
+		"luminosite": Luminosite
+		}
+	    },
         
         ]
     
@@ -261,6 +293,7 @@ Tair = 10
 Hygro = 0
 Pression = 0
 Telec = 0
+Luminosite = 0
 
 
 client = InfluxDBClient (host='localhost', port=8086)
@@ -295,7 +328,7 @@ while True :
   versInfluxDB ()
 
   print (datetime.datetime.now())
-  print (" :  T eau : " + str(Teau) + "  T air : " + str(Tair) + ' Hygro : ' + str(Hygro) + " Pression : " + str(Pression) + " T Elec : " + str (Telec))
+  print ("T eau: " + str(Teau) + "  T air: " + str(Tair) + '  Hygro: ' + str(Hygro) + "  Pression: " + str(Pression) + "  T Elec: " + str (Telec) + " Lux: " + str (Luminosite))
   print ()
   time.sleep (300)
 
